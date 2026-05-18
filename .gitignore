@@ -1,0 +1,39 @@
+# Gradle
+.gradle/
+build/
+gradle-app.setting
+!gradle-wrapper.jar
+.gradletasknamecache
+
+# IntelliJ IDEA
+.idea/
+*.iml
+*.iws
+*.ipr
+out/
+.intellijPlatform/
+
+# Kotlin
+.kotlin/
+kotlin-compiler.jar
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Editor
+*.swp
+*.swo
+*~
+.vscode/
+
+# Maven
+target/
+
+# Misc
+*.log
+*.jar
+!gradle-wrapper.jar
+!**/libs/*.jar
+dist/
+/.idea/
