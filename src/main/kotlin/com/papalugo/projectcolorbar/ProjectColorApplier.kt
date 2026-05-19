@@ -11,11 +11,13 @@ import javax.swing.border.MatteBorder
 object ProjectColorApplier {
 
     private const val TOP_BAND_HEIGHT    = 7    // px — faixa superior
-    private const val SIDE_BAND_WIDTH    = 4    // px — faixas laterais (esq/dir)
+    private const val BOTTOM_BAND_HEIGHT = 3    // px — faixa inferior
+    private const val SIDE_BAND_WIDTH    = 3    // px — faixas laterais (esq/dir)
     private const val BAND_OPACITY       = 0.95f
-    private const val COMPONENT_NAME_TOP  = "ProjectColorBand_Top"
-    private const val COMPONENT_NAME_LEFT = "ProjectColorBand_Left"
-    private const val COMPONENT_NAME_RIGHT= "ProjectColorBand_Right"
+    private const val COMPONENT_NAME_TOP    = "ProjectColorBand_Top"
+    private const val COMPONENT_NAME_LEFT   = "ProjectColorBand_Left"
+    private const val COMPONENT_NAME_RIGHT  = "ProjectColorBand_Right"
+    private const val COMPONENT_NAME_BOTTOM = "ProjectColorBand_Bottom"
 
     fun apply(project: Project) {
         val settings = ProjectColorSettings.getInstance(project)
@@ -50,21 +52,24 @@ object ProjectColorApplier {
         // 1. Remove faixas antigas
         removeOldBands(rootPane)
 
-        // 2. Cria as três faixas (topo, esquerda, direita)
-        val bandTop   = ColorBandComponent(color, BandOrientation.HORIZONTAL)
-        val bandLeft  = ColorBandComponent(color, BandOrientation.VERTICAL_LEFT)
-        val bandRight = ColorBandComponent(color, BandOrientation.VERTICAL_RIGHT)
-        bandTop.name   = COMPONENT_NAME_TOP
-        bandLeft.name  = COMPONENT_NAME_LEFT
-        bandRight.name = COMPONENT_NAME_RIGHT
+        // 2. Cria as quatro faixas (topo, esquerda, direita, rodapé)
+        val bandTop    = ColorBandComponent(color, BandOrientation.HORIZONTAL)
+        val bandLeft   = ColorBandComponent(color, BandOrientation.VERTICAL_LEFT)
+        val bandRight  = ColorBandComponent(color, BandOrientation.VERTICAL_RIGHT)
+        val bandBottom = ColorBandComponent(color, BandOrientation.HORIZONTAL_BOTTOM)
+        bandTop.name    = COMPONENT_NAME_TOP
+        bandLeft.name   = COMPONENT_NAME_LEFT
+        bandRight.name  = COMPONENT_NAME_RIGHT
+        bandBottom.name = COMPONENT_NAME_BOTTOM
 
         glassPane.isVisible = true
         glassPane.layout    = null
         glassPane.add(bandTop)
         glassPane.add(bandLeft)
         glassPane.add(bandRight)
+        glassPane.add(bandBottom)
 
-        positionBands(bandTop, bandLeft, bandRight, frame)
+        positionBands(bandTop, bandLeft, bandRight, bandBottom, frame)
 
         // 3. Borda colorida fina no contentPane (linha de separação)
         (rootPane.contentPane as? JComponent)?.border = MatteBorder(2, 0, 0, 0, color)
@@ -82,7 +87,7 @@ object ProjectColorApplier {
             .forEach { frame.removeComponentListener(it) }
         frame.addComponentListener(object : ComponentAdapter() {
             override fun componentResized(e: ComponentEvent?) {
-                positionBands(bandTop, bandLeft, bandRight, frame)
+                positionBands(bandTop, bandLeft, bandRight, bandBottom, frame)
             }
         })
     }
@@ -103,7 +108,7 @@ object ProjectColorApplier {
     private fun removeOldBands(rootPane: JRootPane) {
         val glass = rootPane.glassPane as? JComponent ?: return
         val toRemove = glass.components.filter { c ->
-            c.name in setOf(COMPONENT_NAME_TOP, COMPONENT_NAME_LEFT, COMPONENT_NAME_RIGHT)
+            c.name in setOf(COMPONENT_NAME_TOP, COMPONENT_NAME_LEFT, COMPONENT_NAME_RIGHT, COMPONENT_NAME_BOTTOM)
         }
         toRemove.forEach { glass.remove(it) }
         glass.revalidate()
@@ -113,6 +118,7 @@ object ProjectColorApplier {
         top: ColorBandComponent,
         left: ColorBandComponent,
         right: ColorBandComponent,
+        bottom: ColorBandComponent,
         frame: JFrame
     ) {
         val glass = frame.rootPane.glassPane as? JComponent ?: return
@@ -121,6 +127,7 @@ object ProjectColorApplier {
         top.setBounds(0, 0, w, TOP_BAND_HEIGHT)
         left.setBounds(0, 0, SIDE_BAND_WIDTH, h)
         right.setBounds(w - SIDE_BAND_WIDTH, 0, SIDE_BAND_WIDTH, h)
+        bottom.setBounds(0, h - BOTTOM_BAND_HEIGHT, w, BOTTOM_BAND_HEIGHT)
         glass.revalidate()
         glass.repaint()
     }
@@ -135,7 +142,7 @@ object ProjectColorApplier {
 
     // ── orientações das faixas ────────────────────────────────────────────────
 
-    private enum class BandOrientation { HORIZONTAL, VERTICAL_LEFT, VERTICAL_RIGHT }
+    private enum class BandOrientation { HORIZONTAL, HORIZONTAL_BOTTOM, VERTICAL_LEFT, VERTICAL_RIGHT }
 
     // ── componente de faixa genérico ──────────────────────────────────────────
 
@@ -155,15 +162,16 @@ object ProjectColorApplier {
 
             val grad: GradientPaint = when (orientation) {
                 BandOrientation.HORIZONTAL ->
-                    // Esquerda→direita (igual ao original)
                     GradientPaint(0f, 0f, solid, width.toFloat(), 0f, fade)
 
+                BandOrientation.HORIZONTAL_BOTTOM ->
+                    // Espelha o topo: direita→esquerda para simetria
+                    GradientPaint(width.toFloat(), 0f, solid, 0f, 0f, fade)
+
                 BandOrientation.VERTICAL_LEFT ->
-                    // Topo→base na barra esquerda
                     GradientPaint(0f, 0f, solid, 0f, height.toFloat(), fade)
 
                 BandOrientation.VERTICAL_RIGHT ->
-                    // Topo→base na barra direita (mesma direção, simetria visual)
                     GradientPaint(0f, 0f, solid, 0f, height.toFloat(), fade)
             }
 
@@ -177,6 +185,12 @@ object ProjectColorApplier {
                     g2.fillRect(0, 0, width, 2)                   // brilho no topo
                     g2.color = Color(0, 0, 0, 40)
                     g2.fillRect(0, height - 1, width, 1)          // sombra na base
+                }
+                BandOrientation.HORIZONTAL_BOTTOM -> {
+                    g2.color = Color(0, 0, 0, 40)
+                    g2.fillRect(0, 0, width, 1)                   // sombra no topo (separação)
+                    g2.color = Color(255, 255, 255, 60)
+                    g2.fillRect(0, height - 2, width, 2)          // brilho na borda inferior
                 }
                 BandOrientation.VERTICAL_LEFT -> {
                     g2.color = Color(255, 255, 255, 60)
