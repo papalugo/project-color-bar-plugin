@@ -109,3 +109,39 @@ src/main/resources/
 ├── META-INF/plugin.xml            # Plugin descriptor
 └── icons/palette.svg              # Toolbar icon
 ```
+
+---
+
+## Publishing to JetBrains Marketplace
+
+### 1. Register the plugin
+1. Go to [plugins.jetbrains.com](https://plugins.jetbrains.com) and log in.
+2. Click **Upload plugin** and fill in the details. You will get a Plugin ID.
+
+### 2. Generate a Token
+1. Go to **Profile → My Tokens → Generate Personal Token**.
+2. Save this token securely.
+
+### 3. Configure build.gradle.kts
+Update the `publishing` block with your token (prefer environment variables):
+```kotlin
+publishing {
+    token = System.getenv("JETBRAINS_MARKETPLACE_TOKEN")
+}
+```
+*Note: Make sure to update the `<vendor>` details in `src/main/resources/META-INF/plugin.xml` before publishing.*
+
+### 4. Publish
+```bash
+# Set the token environment variable and run the publish task
+JETBRAINS_MARKETPLACE_TOKEN="your_token_here" ./gradlew publishPlugin
+```
+
+### Adding a Video Demo
+The plugin description inside the IDE (from `plugin.xml`) only supports basic HTML. To add a video:
+1. Go to your plugin's page on the [JetBrains Marketplace](https://plugins.jetbrains.com).
+2. Edit the plugin and go to the **Overview** tab.
+3. Paste a YouTube link in the **Video URL** field, or embed it in Markdown:
+   ```markdown
+   [![Watch the demo](thumbnail_url)](https://youtu.be/YOUR_VIDEO_ID)
+   ```
