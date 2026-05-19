@@ -5,7 +5,7 @@ plugins {
 }
 
 group = "com.papalugo.projectcolorbar"
-version = "1.0.9"
+version = "1.0.10"
 
 repositories {
     mavenCentral()
@@ -26,7 +26,7 @@ dependencies {
 intellijPlatform {
     pluginConfiguration {
         name = "Project Color Bar"
-        version = "1.0.9"
+        version = "1.0.10"
         description = """
             Color your IDE title bar and borders per project for instant visual identification.
             

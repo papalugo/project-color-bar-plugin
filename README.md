@@ -42,7 +42,7 @@ Color your IDE title bar and window borders **per project** for instant visual i
 
 The `.zip` file will be generated at:
 ```
-build/distributions/project-color-bar-1.0.0.zip
+build/distributions/papalugo-project-color-bar-1.0.9.zip
 ```
 
 ### 2. Install in IntelliJ IDEA

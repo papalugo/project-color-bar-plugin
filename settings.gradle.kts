@@ -1,1 +1,1 @@
-rootProject.name = "project-color-bar"
+rootProject.name = "papalugo-project-color-bar"
