@@ -37,3 +37,4 @@ target/
 !**/libs/*.jar
 dist/
 /.idea/
+bin/
