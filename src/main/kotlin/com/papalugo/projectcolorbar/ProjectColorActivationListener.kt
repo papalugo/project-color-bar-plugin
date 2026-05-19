@@ -6,13 +6,9 @@ import com.intellij.openapi.project.ProjectManager
 import com.intellij.openapi.wm.IdeFrame
 
 /**
- * Escuta quando qualquer janela do IntelliJ ganha foco.
- * É o hook mais confiável — dispara sempre que a janela aparece,
- * seja na abertura inicial, ao trocar de projeto, ou ao voltar
- * de outra janela.
- *
- * Usa um Set para não aplicar mais de uma vez por projeto
- * (evita repintar a cada troca de foco após já ter sido aplicado).
+ * Listens for any IntelliJ window gaining focus.
+ * This is the most reliable hook — fires whenever the window appears,
+ * whether on initial open, project switch, or returning from another window.
  */
 class ProjectColorActivationListener : ApplicationActivationListener {
 
@@ -26,7 +22,7 @@ class ProjectColorActivationListener : ApplicationActivationListener {
         val settings = ProjectColorSettings.getInstance(project)
         if (!settings.enabled || settings.colorArgb == -1) return
 
-        // Aplica sempre — garante que após troca de tema ou restart a cor volta
+        // Always re-apply — ensures color is restored after theme change or restart
         log.warn("PCB applicationActivated: project=${project.name}, color=${settings.colorArgb}")
         ProjectColorApplier.apply(project)
     }

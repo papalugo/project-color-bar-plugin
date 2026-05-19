@@ -7,9 +7,9 @@ import com.intellij.openapi.wm.WindowManager
 import javax.swing.SwingUtilities
 
 /**
- * Escuta o evento projectOpened — dispara quando um projeto é aberto
- * ou quando se troca de projeto. Complementa o ApplicationActivationListener
- * para os casos em que a janela já tem foco e o activated não dispara.
+ * Listens to the projectOpened event — fires when a project is opened
+ * or switched. Complements ApplicationActivationListener for cases where
+ * the window already has focus and applicationActivated does not fire.
  */
 class ProjectColorProjectListener : ProjectManagerListener {
 
@@ -20,7 +20,7 @@ class ProjectColorProjectListener : ProjectManagerListener {
         log.warn("PCB projectOpened: project=${project.name} enabled=${settings.enabled} color=${settings.colorArgb}")
         if (!settings.enabled || settings.colorArgb == -1) return
 
-        // Polling: aguarda o frame estar visível
+        // Polling: wait until the frame is visible
         waitForFrame(project)
     }
 
