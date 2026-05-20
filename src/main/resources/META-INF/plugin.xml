@@ -1,8 +1,8 @@
 <idea-plugin>
     <id>com.papalugo.projectcolorbar</id>
     <name>Project Color Bar</name>
-    <version>1.0.5</version>
-    <vendor email="you@example.com" url="https://github.com/you/project-color-bar">Project Color Bar</vendor>
+    <version>1.0.10</version>
+    <vendor email="comin.claudinei@gmail.com" url="https://github.com/you/project-color-bar">Project Color Bar</vendor>
 
     <description><![CDATA[
         Color your IDE title bar and window borders per project for instant visual identification.<br><br>

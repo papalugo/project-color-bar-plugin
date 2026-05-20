@@ -48,6 +48,7 @@ intellijPlatform {
     }
     publishing {
         // configure if you want to publish to JetBrains Marketplace
+        token = System.getenv("JETBRAINS_MARKETPLACE_TOKEN")
     }
     pluginVerification {
         ides {
